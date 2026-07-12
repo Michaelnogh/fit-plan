@@ -73,6 +73,7 @@ export async function seedIfNeeded() {
   if (done) {
     // רשת ביטחון: ודא שהלוח השבועי קיים גם בבסיסי נתונים ותיקים
     if (!(await db.settings.get('schedule'))) await db.settings.put({ key: 'schedule', value: DEFAULT_SCHEDULE });
+    await backfillWeekIfNeeded();
     return;
   }
   await db.transaction('rw', db.tables, async () => {
@@ -90,8 +91,47 @@ export async function seedIfNeeded() {
       { key: 'schedule', value: DEFAULT_SCHEDULE },
     ]);
   });
+  await backfillWeekIfNeeded();
   // בקשת אחסון קבוע כדי ש-iOS לא ינקה את הנתונים
   if (navigator.storage?.persist) navigator.storage.persist().catch(() => {});
+}
+
+// מילוי חד-פעמי בדיעבד (לבקשת המשתמש): שבוע האימונים 05–11.07.2026.
+// ראשון–חמישי: כל חמשת ימי התוכנית הושלמו במלואם; חמישי–שבת: רכיבות.
+// ערכי המרחק/משך של הרכיבות הם ברירת-מחדל — ניתן לעדכן דרך דף המסלול.
+const BACKFILL = {
+  key: 'backfilled-week-2026-07-11',
+  workouts: [
+    { date: '2026-07-05', dayId: 'upper' },
+    { date: '2026-07-06', dayId: 'lower' },
+    { date: '2026-07-07', dayId: 'push' },
+    { date: '2026-07-08', dayId: 'pull' },
+    { date: '2026-07-09', dayId: 'legs' },
+  ],
+  rides: ['2026-07-09', '2026-07-10', '2026-07-11'],
+};
+
+async function backfillWeekIfNeeded() {
+  if (await db.settings.get(BACKFILL.key)) return;
+  for (const { date, dayId } of BACKFILL.workouts) {
+    const entries = await db.programEntries.where('dayId').equals(dayId).toArray();
+    const logged = new Set(
+      (await db.workoutLogs.where('[dayId+date]').equals([dayId, date]).toArray()).map((l) => l.entryId));
+    const missing = entries.filter((e) => !logged.has(e.id));
+    if (missing.length) {
+      await db.workoutLogs.bulkAdd(missing.map((e) => ({
+        entryId: e.id, dayId, date,
+        weight: e.weight, sets: e.sets, reps: e.reps, name: e.name, createdAt: now(),
+      })));
+    }
+    await syncSession(dayId, date);
+  }
+  for (const date of BACKFILL.rides) {
+    if (!(await db.cyclingLogs.where('date').equals(date).first())) {
+      await upsertCycling(date, { distanceKm: 15, durationMin: 45, notes: '' });
+    }
+  }
+  await db.settings.put({ key: BACKFILL.key, value: true });
 }
 
 // ---------------- אימונים ----------------
