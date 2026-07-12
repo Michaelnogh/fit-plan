@@ -1,3 +1,8 @@
 node_modules/
 dist/
 .DS_Store
+
+# סביבה וגיבויים אישיים — לא לפרסם
+.env
+.env.*
+fit-plan-backup-*.json

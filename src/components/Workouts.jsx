@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, todayStr, updateEntry, toggleExerciseDone } from '../db/db';
+import { db, todayStr, updateEntry, toggleExerciseDone, completeWorkout, reopenWorkout } from '../db/db';
 import { Sheet, Check, TrendChart, fmtDate } from './ui';
 
 function ExerciseSheet({ entry, onClose }) {
@@ -90,9 +90,12 @@ export default function Workouts({ initialDay }) {
     () => db.programEntries.where('dayId').equals(dayId).sortBy('order'), [dayId]);
   const todayLogs = useLiveQuery(
     () => db.workoutLogs.where('[dayId+date]').equals([dayId, today]).toArray(), [dayId, today]);
+  const session = useLiveQuery(
+    () => db.workoutSessions.where('[dayId+date]').equals([dayId, today]).first(), [dayId, today]);
 
   if (!days || !entries) return null;
   const doneIds = new Set((todayLogs || []).map((l) => l.entryId));
+  const sessionDone = session?.status === 'completed';
 
   return (
     <div className="screen">
@@ -103,6 +106,24 @@ export default function Workouts({ initialDay }) {
         {days.map((d) => (
           <button key={d.id} className={d.id === dayId ? 'on' : ''} onClick={() => setDayId(d.id)}>{d.name}</button>
         ))}
+      </div>
+
+      <div className="card">
+        <div className="row between">
+          {sessionDone ? (
+            <span className="bold pos">האימון הושלם 🎉</span>
+          ) : (
+            <span className="small num">{doneIds.size}/{entries.length} תרגילים סומנו</span>
+          )}
+          {sessionDone && session?.manuallyCompleted ? (
+            <button className="btn gray small" onClick={() => reopenWorkout(dayId, today)}>ביטול</button>
+          ) : !sessionDone && doneIds.size > 0 ? (
+            <button className="btn soft small" onClick={() => completeWorkout(dayId, today)}>סיום אימון ✓</button>
+          ) : null}
+        </div>
+        <div className="bar" style={{ marginTop: 10 }}>
+          <i style={{ width: `${entries.length ? (doneIds.size / entries.length) * 100 : 0}%` }} />
+        </div>
       </div>
 
       <div className="list">

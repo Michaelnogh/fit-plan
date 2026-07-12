@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db, seedIfNeeded } from './db/db';
 import Dashboard from './components/Dashboard';
 import Workouts from './components/Workouts';
+import Roadmap from './components/Roadmap';
 import Nutrition from './components/Nutrition';
 import Weight from './components/Weight';
 import Measurements from './components/Measurements';
@@ -15,6 +16,7 @@ const Icon = ({ d }) => (
 const TABS = [
   { id: 'home',      label: 'בית',     icon: 'M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5' },
   { id: 'workouts',  label: 'אימונים', icon: 'M6.5 6.5v11M17.5 6.5v11M2.5 9.5v5M21.5 9.5v5M6.5 12h11' },
+  { id: 'roadmap',   label: 'מסלול',   icon: 'M4 5.5h16v15H4zM4 9.5h16M8.5 3v4M15.5 3v4' },
   { id: 'nutrition', label: 'תזונה',   icon: 'M12 3c-4 3.5-6 6.5-6 10a6 6 0 0 0 12 0c0-3.5-2-6.5-6-10ZM12 9v8' },
   { id: 'weight',    label: 'משקל',    icon: 'M4 6h16v14H4zM4 6l2-3h12l2 3M12 13l3-4' },
   { id: 'measure',   label: 'מדידות',  icon: 'M3 8h18v8H3zM7 8v3M11 8v4M15 8v3M19 8v4' },
@@ -43,6 +45,7 @@ export default function App() {
     <>
       {tab === 'home'      && <Dashboard go={go} />}
       {tab === 'workouts'  && <Workouts initialDay={workoutDay} key={workoutDay || 'w'} />}
+      {tab === 'roadmap'   && <Roadmap />}
       {tab === 'nutrition' && <Nutrition />}
       {tab === 'weight'    && <Weight />}
       {tab === 'measure'   && <Measurements />}
