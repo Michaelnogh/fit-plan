@@ -159,6 +159,57 @@ export default function Shakes() {
         )}
       </div>
 
+      {/* מתכון מומלץ */}
+      <section className="section">
+        <span className="eyebrow">מתכון מומלץ · 700 מ״ל דל קלוריות</span>
+        <div className="card">
+          <div className="list">
+            <div className="list-row">
+              <div className="grow">
+                <div className="metric metric-sm">אבקת חלבון (איזולט)</div>
+                <div className="caption">60 גרם · כ-2 מנות</div>
+              </div>
+              <span className="caption num">220 קק״ל</span>
+            </div>
+            <div className="list-row">
+              <div className="grow">
+                <div className="metric metric-sm">קריאטין</div>
+                <div className="caption">5 גרם</div>
+              </div>
+              <span className="caption num">0 קק״ל</span>
+            </div>
+            <div className="list-row">
+              <div className="grow">
+                <div className="metric metric-sm">פירות יער / תות קפואים</div>
+                <div className="caption">100 גרם</div>
+              </div>
+              <span className="caption num">‎~35 קק״ל</span>
+            </div>
+            <div className="list-row">
+              <div className="grow">
+                <div className="metric metric-sm">חלב שקדים ללא סוכר</div>
+                <div className="caption">300 מ״ל</div>
+              </div>
+              <span className="caption num">‎~39 קק״ל</span>
+            </div>
+            <div className="list-row">
+              <div className="grow">
+                <div className="metric metric-sm">קרח + מים להשלמה</div>
+                <div className="caption">כ-150 מ״ל</div>
+              </div>
+              <span className="caption num">0 קק״ל</span>
+            </div>
+          </div>
+          <div className="row between" style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--hairline)' }}>
+            <span className="caption">סה״כ · 700 מ״ל</span>
+            <span className="metric metric-sm">‎~290 קק״ל · 52 ג׳ חלבון</span>
+          </div>
+          <div className="caption" style={{ marginTop: 8 }}>
+            טיפ: להורדה נוספת ל-‎~250 קק״ל — החלף את חלב השקדים במים.
+          </div>
+        </div>
+      </section>
+
       {/* מדדים */}
       <div className="grid-2" style={{ marginTop: 12 }}>
         <div className="card">
